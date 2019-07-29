@@ -38,18 +38,19 @@ module.exports = function(passport){
 
   router.get('/api/column', function(req, res){
   columnsModel.find(function(err,src){
-    if(src.length == 0){
-      var columnArr = [{"id": 5,"title": "To Do"},{"id": 7,"title": "In Progress"},{"id": 8,"title": "Done"}];
+    if(src.length === 0){
+      var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
       for(let i=0; i<3; i++){
         var columnObj = new columnsModel(columnArr[i]);
         columnObj.save(()=>console.log("Column save to DB"));
-        res.type("application/json").send(JSON.stringify(src));
       }
+      res.type("application/json").send(JSON.stringify(columnArr));
     }
-    if(err)
+    else if(err)
       console.log(err);
     else{
       console.log("get columns");
+      console.log(src);
       res.type("application/json").send(JSON.stringify(src));
     }
   });
