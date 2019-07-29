@@ -40,11 +40,11 @@ module.exports = function(passport){
   columnsModel.find(function(err,src){
     if(src.length === 0){
       var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
+      res.type("application/json").send(JSON.stringify(columnArr));
       for(let i=0; i<3; i++){
         var columnObj = new columnsModel(columnArr[i]);
         columnObj.save(()=>console.log("Column save to DB"));
       }
-      res.type("application/json").send(JSON.stringify(columnArr));
     }
     else if(err)
       console.log(err);
@@ -112,7 +112,20 @@ module.exports = function(passport){
           throw err;
         }
         else{
-          doc.title = patch.title;
+          if(!patch.title && patch.columnId){
+            if(patch.title!=undefined){
+              doc.title = patch.title;
+            }
+            else{
+              doc.columnId = patch.columnId;
+            }
+          }
+          else if(patch.title && !patch.columnId){
+            doc.title = patch.title;
+          }
+          else{
+            doc.title = patch.title;
+          }
           doc.save(()=>console.log("Document updated"));
         }
       });
