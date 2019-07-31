@@ -98,11 +98,12 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "outputElements", function() { return outputElements; });
 /* harmony import */ var _columns_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./columns.js */ "./src/columns.js");
 /* harmony import */ var _cards_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./cards.js */ "./src/cards.js");
+/* harmony import */ var _dragNdrop_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./dragNdrop.js */ "./src/dragNdrop.js");
+
 
 
 
 async function outputElements(){
-
 	let objColumn = await Object(_columns_js__WEBPACK_IMPORTED_MODULE_0__["getColumns"])();
 	let objCard = await Object(_cards_js__WEBPACK_IMPORTED_MODULE_1__["getCards"])();
 	//let objColumn = getColumns();//объекты из хранилища 
@@ -144,6 +145,10 @@ async function outputElements(){
   	});
   	mainTableElement.addEventListener('keypress', _cards_js__WEBPACK_IMPORTED_MODULE_1__["eventPressingEnterListener"]);
   	mainTableElement.addEventListener('focusout', _cards_js__WEBPACK_IMPORTED_MODULE_1__["eventPressingEnterListener"]);
+
+  	document.addEventListener("dragstart", _dragNdrop_js__WEBPACK_IMPORTED_MODULE_2__["dragStartListener"]);
+  	document.addEventListener("dragover", _dragNdrop_js__WEBPACK_IMPORTED_MODULE_2__["dragOverListener"]);
+  	document.addEventListener("drop", _dragNdrop_js__WEBPACK_IMPORTED_MODULE_2__["dropListener"]);
 }
 
 
@@ -179,12 +184,14 @@ function createCardElement(infoOfCard){
 	contentNode.className = 'card-content';
 	contentNode.contentEditable = 'true';
 	contentNode.textContent = infoOfCard.title;
+	contentNode.setAttribute("draggable", false);
 
 	let removeButton = document.createElement('button');//кнопка удаления карточки
 	removeButton.className = 'removeButton';
   
 	newCard.setAttribute("data-column", infoOfCard.columnId);//добавляем атрибут для поиска соотвецтвующей коллонки
 	removeButton.setAttribute("data-card-id", infoOfCard.id);//атрибут для обнаружения в какой карточке находится кнопка
+	newCard.setAttribute("draggable", true);
 
 	newCard.appendChild(removeButton);
 	newCard.appendChild(contentNode);
@@ -234,11 +241,11 @@ function eventPressingEnterListener(event){
 	if(event.target.className == 'card-content'){
 		let idCard = +event.target.closest(".card").id;
 		let text = event.target.textContent;
-		if(event.keyCode === 13){
-		event.preventDefault();
-		updateCard(idCard, text);
-  }
-}
+		if(event.keyCode === 13 || event.type === 'focusout'){
+			event.preventDefault();
+			updateCard(idCard, text);
+		}
+	}
 }
 
 
@@ -287,6 +294,56 @@ function createColumn(InfoOfColumn){
 	newCol.appendChild(buttonAdd);//добавляем кнопку добавления карточек
 
 	return newCol;//вернули массив с созданными колонками
+}
+
+/***/ }),
+
+/***/ "./src/dragNdrop.js":
+/*!**************************!*\
+  !*** ./src/dragNdrop.js ***!
+  \**************************/
+/*! exports provided: dragStartListener, dragOverListener, dropListener */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dragStartListener", function() { return dragStartListener; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dragOverListener", function() { return dragOverListener; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dropListener", function() { return dropListener; });
+var dragged;
+
+function dragStartListener(event){
+	if(event.target.className === 'card-content'){
+		dragged = event.target.closest(".card");
+	}
+	else if(event.target.parentNode.className === 'card-content'){
+		dragged = event.target.parentNode.closest(".card");
+	}
+	else{
+		dragged = event.target;
+	}
+};
+
+ function dragOverListener(event){
+	event.preventDefault();
+};
+
+function dropListener(event){
+	if(event.target.className === 'columns'){
+		dragged.parentNode.removeChild(dragged);
+		event.target.appendChild(dragged);
+	}
+	updateCardColumnId(dragged.id, event.target.id);
+};
+
+async function updateCardColumnId(cardId, idColumn){
+	let buff = {columnId: idColumn};
+
+	await fetch(`http://localhost:3000/api/card/${cardId}`, {
+		method:'PATCH', 
+		headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+		body: JSON.stringify(buff)
+	});
 }
 
 /***/ }),

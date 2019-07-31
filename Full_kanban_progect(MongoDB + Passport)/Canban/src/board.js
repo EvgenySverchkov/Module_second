@@ -1,8 +1,8 @@
 import {createColumn, getColumns} from './columns.js';
 import {createCardElement, getCards, addCard, removeCard, eventPressingEnterListener} from './cards.js';
+import {dragStartListener, dragOverListener, dropListener} from './dragNdrop.js';
 
 export async function outputElements(){
-
 	let objColumn = await getColumns();
 	let objCard = await getCards();
 	//let objColumn = getColumns();//объекты из хранилища 
@@ -44,4 +44,8 @@ export async function outputElements(){
   	});
   	mainTableElement.addEventListener('keypress', eventPressingEnterListener);
   	mainTableElement.addEventListener('focusout', eventPressingEnterListener);
+
+  	document.addEventListener("dragstart", dragStartListener);
+  	document.addEventListener("dragover", dragOverListener);
+  	document.addEventListener("drop", dropListener);
 }

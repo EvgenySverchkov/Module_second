@@ -1,8 +1,10 @@
 var express = require('express');
+var compression = require('compression');
 var columnsModel = require('../models/columnModel');
 var cardsModel = require('../models/cardModel');
 var router = express.Router();
-
+ var app = express();
+ app.use(compression());
 module.exports = function(passport){
   router.get('/', function(req, res) {
     res.render('index');
@@ -35,15 +37,28 @@ module.exports = function(passport){
   router.get('/errLog', function(req, res){
     res.send('Login ERROR!!!');
   });
-
-  router.get('/api/column', function(req, res){
+  function middleware(req, res, next){
+    columnsModel.find(function(err,src){
+      if(src.length === 0){
+        var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
+        res.type("application/json").send(JSON.stringify(columnArr));
+      }
+    });
+    next();
+  }
+  router.get('/api/column', middleware, function(req, res){
   columnsModel.find(function(err,src){
     if(src.length === 0){
-      var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
+      /*var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
+      console.log("1");
       res.type("application/json").send(JSON.stringify(columnArr));
+      console.log("2");*/
+      var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
       for(let i=0; i<3; i++){
         var columnObj = new columnsModel(columnArr[i]);
+        console.log("3");
         columnObj.save(()=>console.log("Column save to DB"));
+        console.log("4");
       }
     }
     else if(err)

@@ -14,12 +14,14 @@ export function createCardElement(infoOfCard){
 	contentNode.className = 'card-content';
 	contentNode.contentEditable = 'true';
 	contentNode.textContent = infoOfCard.title;
+	contentNode.setAttribute("draggable", false);
 
 	let removeButton = document.createElement('button');//кнопка удаления карточки
 	removeButton.className = 'removeButton';
   
 	newCard.setAttribute("data-column", infoOfCard.columnId);//добавляем атрибут для поиска соотвецтвующей коллонки
 	removeButton.setAttribute("data-card-id", infoOfCard.id);//атрибут для обнаружения в какой карточке находится кнопка
+	newCard.setAttribute("draggable", true);
 
 	newCard.appendChild(removeButton);
 	newCard.appendChild(contentNode);
@@ -65,15 +67,15 @@ export async function removeCard(idCard){
       fetch(`http://localhost:3000/api/card/${idCard}`, {method:'delete'});
 }
 
-export  function eventPressingEnterListener(event){
+export function eventPressingEnterListener(event){
 	if(event.target.className == 'card-content'){
 		let idCard = +event.target.closest(".card").id;
 		let text = event.target.textContent;
-		if(event.keyCode === 13){
-		event.preventDefault();
-		updateCard(idCard, text);
-  }
-}
+		if(event.keyCode === 13 || event.type === 'focusout'){
+			event.preventDefault();
+			updateCard(idCard, text);
+		}
+	}
 }
 
 
