@@ -49,23 +49,13 @@ module.exports = function(passport){
   router.get('/api/column', middleware, function(req, res){
   columnsModel.find(function(err,src){
     if(src.length === 0){
-      /*var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
-      console.log("1");
-      res.type("application/json").send(JSON.stringify(columnArr));
-      console.log("2");*/
       var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
-      for(let i=0; i<3; i++){
-        var columnObj = new columnsModel(columnArr[i]);
-        console.log("3");
-        columnObj.save(()=>console.log("Column save to DB"));
-        console.log("4");
-      }
+        columnsModel.create(columnArr[0], columnArr[1], columnArr[2], ()=>console.log("Column save to DB"));
     }
     else if(err)
       console.log(err);
     else{
       console.log("get columns");
-      console.log(src);
       res.type("application/json").send(JSON.stringify(src));
     }
   });
@@ -107,9 +97,12 @@ module.exports = function(passport){
 
   router.delete("/api/card/:id", function(req, res){
   const ID = +req.params.id;
-  let src = cardsModel.findOneAndDelete({id: ID}, function(err){
+  cardsModel.findOneAndDelete({id: ID}, function(err){
     if(err){
       throw err;
+    }
+    else{
+      res.end();
     }
   });
 });
@@ -141,7 +134,7 @@ module.exports = function(passport){
           else{
             doc.title = patch.title;
           }
-          doc.save(()=>console.log("Document updated"));
+          doc.save(()=>res.end());
         }
       });
     }
