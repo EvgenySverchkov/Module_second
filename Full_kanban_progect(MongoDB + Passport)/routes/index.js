@@ -46,11 +46,11 @@ module.exports = function(passport){
     next();
   }
 
-  router.get('/api/column', middleware, function(req, res){
+  router.get('/api/column', /*middleware,*/ function(req, res){
     columnsModel.find(function(err,src){
       if(src.length === 0){
         var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
-        columnsModel.create(columnArr[0], columnArr[1], columnArr[2], ()=>console.log("Column save to DB"));
+        columnsModel.create(columnArr, (err,src)=>res.type("application/json").send(JSON.stringify(src)));
       }
       else if(err){
         console.log(err);
