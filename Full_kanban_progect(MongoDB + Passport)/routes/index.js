@@ -36,7 +36,7 @@ module.exports = function(passport){
     res.send('Login ERROR!!!');
   });
 
-  /*function middleware(req, res, next){
+  function middleware(req, res, next){
     columnsModel.find(function(err,src){
       if(src.length === 0){
         var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
@@ -44,9 +44,9 @@ module.exports = function(passport){
       }
     });
     next();
-  }*/
+  }
 
-  router.get('/api/column',/* middleware, */function(req, res){
+  router.get('/api/column', middleware, function(req, res){
     columnsModel.find(function(err,src){
       if(src.length === 0){
         var columnArr = [{id: 5,title: "To Do"},{id: 7,title: "In Progress"},{id: 8,title: "Done"}];
