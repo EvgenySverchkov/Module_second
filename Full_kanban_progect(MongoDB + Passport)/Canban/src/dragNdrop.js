@@ -12,7 +12,7 @@ export function dragStartListener(event){
 	}
 };
 
- export function dragOverListener(event){
+export function dragOverListener(event){
 	event.preventDefault();
 };
 
@@ -27,7 +27,7 @@ export function dropListener(event){
 async function updateCardColumnId(cardId, idColumn){
 	let buff = {columnId: idColumn};
 
-	await fetch(`http://localhost:3000/api/card/${cardId}`, {
+	await fetch(`http://localhost:3000/api/card/${cardId}`,{
 		method:'PATCH', 
 		headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
 		body: JSON.stringify(buff)

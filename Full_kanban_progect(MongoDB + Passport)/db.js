@@ -1,3 +1,1 @@
-module.exports = {
-  'url' : 'mongodb://localhost:27017/kanbanBoard'
-}
+module.exports = {'url': 'mongodb://localhost:27017/kanbanBoard'}
