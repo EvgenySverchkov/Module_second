@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simple storage</title>
+</head>
+<body>
+	<form action="/store" method="post" enctype="multipart/form-data">
+		<input type="file" name="postdata">
+		<input type="submit" name="SendFile" value='Send file'>
+	</form><br>
+
+	<form action="/app" method="get" enctype="multipart/form-data">
+		<input type="file" name="getdata">
+		<input type="submit" name="GetFile" value = 'Get file'>
+	</form>
+	
+</body>
+</html>
